@@ -15,7 +15,7 @@
 #define RFID_RST_PIN      9
 #define RFID_SS_PIN       10
 
-#define UNLOCK_TIMEOUT    200000
+#define UNLOCK_TIMEOUT    5000
 
 bool is_unlocked = false;
 unsigned long unlock_time;
@@ -48,8 +48,6 @@ void servo_to_unlock_position() {
   servo_to_position(SERVO_UNLOCK_POS);
 }
 
-
-
 void setup() {
   pinMode(BUZZER_PIN, OUTPUT);
 
@@ -69,7 +67,7 @@ void loop() {
   if (!rfid_reader.PICC_IsNewCardPresent()) {
     if (is_unlocked && !rfid_reader.PICC_ReadCardSerial()) {
       // if card is not detected, add to elapsed time
-      elapsed_time_since_unlock += (millis() - unlock_time);
+      elapsed_time_since_unlock = (millis() - unlock_time - elapsed_time_since_unlock);
   
       // check if unlock has timed out (and card is not detected)
       if (elapsed_time_since_unlock >= UNLOCK_TIMEOUT) {
